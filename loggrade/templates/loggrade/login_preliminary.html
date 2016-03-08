@@ -1,0 +1,341 @@
+{% load cut_result %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <!--
+        Charisma v1.0.0
+
+        Copyright 2012 Muhammad Usman
+        Licensed under the Apache License v2.0
+        http://www.apache.org/licenses/LICENSE-2.0
+
+        http://usman.it
+        http://twitter.com/halalit_usman
+    -->
+    <!-- dashboard的意思是指示版 -->
+    <meta charset="utf-8">
+    <title>运动会计分系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Charisma, a fully featured, responsive, HTML5, Bootstrap admin template.">
+    <meta name="author" content="Muhammad Usman">
+
+    <!-- The styles -->
+    <!-- {% load staticfiles %} -->
+    <link href="{% static 'css/font.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-cerulean.css' %}" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      div.race_result > label{
+        float: left;
+        margin-left: 5px;
+      }
+      div.race_result > input{
+        float: left;
+        margin-left: 5px;
+      }
+      
+    </style>
+    {% load staticfiles %}
+    <link href="{% static 'css/bootstrap-responsive.css' %}" rel="stylesheet">
+    <link href="{% static 'css/charisma-app.css' %}" rel="stylesheet">
+    <link href="{% static 'css/jquery-ui-1.8.21.custom.css' %}" rel="stylesheet">
+    <link href="{% static 'css/fullcalendar.css' %}" rel='stylesheet'>
+    <link href="{% static 'css/fullcalendar.print.css' %}" rel='stylesheet'  media='print'>
+    <link href="{% static 'css/chosen.css' %}" rel='stylesheet'>
+    <link href="{% static 'css/uniform.default.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/colorbox.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/jquery.cleditor.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/jquery.noty.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/noty_theme_default.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/elfinder.min.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/elfinder.theme.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/jquery.iphone.toggle.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/opa-icons.css'%}" rel='stylesheet'>
+    <link href="{% static 'css/uploadify.css'%}" rel='stylesheet'>
+
+    <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+
+    <!-- 提供html5元素的IE6-8支持 -->
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- The fav icon -->
+    <!-- <link rel="shortcut icon" href="img/favicon.ico">
+    -->
+<script src="{% static 'js/jquery-1.7.2.min.js'%}"></script>
+<script type="text/javascript">
+  // function 不能写在$(document).ready(function(){}里面
+  $(document).ready(function(){
+    // $("select:first").attr("disabled",false);
+
+    var sport_id = {{sport_id}};
+    var format = {{format}};
+
+    $("select#group_option").change(function(){
+      var group = this.value;
+      // 页面跳转
+      window.location.href="/loggrade/login_preliminary/" + sport_id + "/" + group;
+      // $(this).options("[value='group']").attr("selected",true);
+    });
+
+    $("option[value='{{group}}']").attr("selected",true);
+
+
+    $("input.absent").click(function(){
+      $(this).parent().prev().children().eq(2).attr("value","-2");
+      $(this).parent().prev().children().eq(3).attr({"disabled":true,"value":""});
+      $(this).parent().prev().children().eq(5).attr({"disabled":true,"value":""});
+      $(this).parent().prev().children().eq(7).attr({"disabled":true,"value":""});
+    });
+
+    $("input.timeoff").click(function(){
+      $(this).parent().prev().prev().children().eq(2).attr("value","0");
+      $(this).parent().prev().prev().children().eq(3).attr({"disabled":true,"value":""});
+      $(this).parent().prev().prev().children().eq(5).attr({"disabled":true,"value":""});
+      $(this).parent().prev().prev().children().eq(7).attr({"disabled":true,"value":""});
+    });
+
+    $("input.runned").click(function(){
+      $(this).parent().children().eq(3).attr("disabled",false);
+      $(this).parent().children().eq(5).attr("disabled",false);
+      $(this).parent().children().eq(7).attr("disabled",false);
+      $(this).parent().children().eq(2).attr("value","");
+    });
+
+    $("a#reset").click(function(){
+
+        $(this).parent().parent().children().eq(4).children().children().eq(0).attr("disabled",false);
+        $(this).parent().parent().children().eq(4).children().children().eq(3).attr("disabled",false);
+        $(this).parent().parent().children().eq(4).children().children().eq(5).attr("disabled",false);
+        $(this).parent().parent().children().eq(4).children().children().eq(7).attr("disabled",false);
+        $(this).parent().prev().children().eq(1).children().attr("disabled",false);
+        $(this).parent().prev().children().eq(2).children().attr("disabled",false);
+    });
+
+    $("a#login_score").click(function(){
+      var athlete_id = $(this).parent().parent().children().eq(2).children().attr("value");
+      var class_num = $(this).parent().parent().children().eq(1).children().attr("value");
+      var group = {{group}};
+      // var format = $("#format").attr("value");
+      var result = $(this).parent().parent().children().eq(4).children().children().eq(2).
+        attr("value");
+      var result_1 = $(this).parent().parent().children().eq(4).children().children().eq(3).attr("value");
+      var result_2 = $(this).parent().parent().children().eq(4).children().children().eq(5).attr("value");
+      var result_3 = $(this).parent().parent().children().eq(4).children().children().eq(7).attr("value");
+      
+      if(result_1 =="" && result_2 =="" && result_3 =="" && result ==""){
+        alert("成绩不能为空!");
+        return false;
+      }
+      // result == "" 说明没有缺席或请假
+      if(format =="1" && result == ""){
+          if(result_1.length == 1) result_1 = "0" + result_1
+            else if(result_1.length == 0) result_1 = "00";
+          if(result_2.length == 1) result_2 = "0" + result_2;
+          if(result_3.length == 1) result_3 = "0" + result_3;
+          result = result_1 + result_2 + result_3;
+          $(this).parent().prev().children().children().eq(3).attr("disabled",true);
+          $(this).parent().prev().children().children().eq(5).attr("disabled",true);
+          $(this).parent().prev().children().children().eq(7).attr("disabled",true);
+          $(this).parent().prev().children().children().attr("disabled",true);
+          $(this).parent().prev().children().eq(1).children().attr("disabled",true);
+          $(this).parent().prev().children().eq(2).children().attr("disabled",true);
+      }else if(format =="0" && result == ""){
+          result = result_1;
+          $(this).parent().prev().children().eq(0).children().eq(3).attr("disabled",true);
+      }
+
+      for(var i=0;i<result.length;i++) 
+      { 
+        
+         if(result.charAt(i)<="Z" && result.charAt(i)>="A" || result.charAt(i)<="z" && result.charAt(i)>="a" ){
+            alert("输入错误！");
+            return false; 
+          }
+      }
+      
+
+      var post_url = "{% url 'loggrade:login_score' %}"
+
+     $.ajax({
+        url:post_url,
+        type:'POST',
+        data:{
+          sport_id : sport_id,
+          athlete_id : athlete_id,
+          class_num : class_num,
+          result : result, 
+          group : group, 
+        },
+        cache:false,
+        success:function(data){
+          alert(data);
+        },
+        error:function(XMLHttpRequest, textStatus, errorThrown){
+          alert(errorThrown);
+        },
+      // dataType : 'json',    
+      // 注释掉自动识别？
+      });
+    });
+  });
+</script>
+</head>
+<body>
+<div class="row-fluid sortable">        
+                <div class="box span12">
+                    <div class="box-header well" data-original-title>
+                        <h2><i class="icon-user"></i> 录入初赛成绩</h2>
+                        <!-- <div class="box-icon">   
+                            <a href="#" class="btn btn-setting btn-round"><i class="icon-cog"></i></a>
+                            <a href="#" class="btn btn-minimize btn-round"><i class="icon-chevron-up"></i></a>
+                            <a href="#" class="btn btn-close btn-round"><i class="icon-remove"></i></a>
+                        </div> -->
+                        <div class="box-icon">
+                        请选择组号
+                        <select style="width:50px" id="group_option">
+                            
+                            {% for i in groups %}
+                                 <option value="{{i}}">{{i}}</option>
+                            {% endfor %}
+                                
+                        </select>
+
+                        </div>
+                    </div>
+
+                    <div class="box-content">
+                        <!-- <div><input type="button" value="决赛名单" id="final_list"></div> -->
+                        <table class="table table-striped table-bordered bootstrap-datatable datatable">
+                          <thead>
+                              <tr>
+                                  <th>组号</th>
+                                  <th>班级</th>
+                                  <th>学号</th>
+                                  <th>姓名</th>
+                                  <th>比赛结果</th>
+                              </tr>
+                          </thead>   
+                          <tbody>
+                          {% if format == "1" %}
+                          {% for athlete in athletes %}
+                           <tr id="athlete_detail">
+                                <td style="width:50px">
+                                <input type="text" id="group" disabled="true" value="{{group}}" style="width:20px">
+                                </td>
+                                
+                                <td style="width:50px"><input type="text" id="class_num" disabled="true" maxlength="1" style="width:30px" value="{{athlete.classObject.num}}"></td>
+                                <td style="width:120px"><input type="text" id="athlete_id" maxlength="12" style="width:100px" disabled="true" value="{{athlete.athleteObject.athlete_id}}"></td>
+                                <td style="width:80px"><input type="text" id="name" disabled="true" style="width:60px" value="{{athlete.athleteObject.name}}"></td>
+                                <td>
+                                <div class="race_result">
+                                <!-- 0 -->
+                                <input type="radio" name="{{athlete.athleteObject.athlete_id}}" id="runned" class="runned">
+                                <label class="race_result">成绩</label>
+                                <!-- 隐藏的input用作存储最后的成绩 -->
+                                <!-- 2 -->
+                                <input type="hidden" id="result" value="">
+                                <!-- 3 -->
+                                <input type="text" id="result_1" style="width:30px" value="{{athlete.result|cut_result:"0"}}">
+                                <label>分</label>
+                                <!-- 5 -->
+                                <input type="text" id="result_2" style="width:30px" value="{{athlete.result|cut_result:"2"}}">
+                                <label>秒</label>
+                                <!-- 7 -->
+                                <input type="text" id="result_3" style="width:30px" value="{{athlete.result|cut_result:"4"}}">
+                                </div>
+                                <!-- 1 -->
+                                <div class="race_result">
+                                <input type="radio" name="{{athlete.athleteObject.athlete_id}}" id="absent" class="absent">
+                                <label>缺席</label>
+                                </div>
+                                <!-- 2 -->
+                                <div class="race_result">
+                                <input type="radio" name="{{athlete.athleteObject.athlete_id}}" id="timeoff" class="timeoff">
+                                <label>请假</label>
+                                </div>
+                                </td>
+                                <td class="center">
+
+                                    <a class="btn btn-success" id="login_score">
+                                        <i class="icon-zoom-in icon-white"></i>  
+                                        录入                                 
+                                    </a>
+                                    <!-- <input type="submit" value="录入"/> -->
+                                    <!-- <input type="button" id="new_score" value="add"> -->
+                                    <a class="btn btn-info" id="reset">
+                                        <i class="icon-edit icon-white"></i>  
+                                        修改                                           
+                                    </a>
+                                    <!-- <a class="btn btn-danger" href="#">
+                                        <i class="icon-trash icon-white"></i> 
+                                        Delete
+                                    </a> -->
+                                </td>
+                             </tr>
+                           {% endfor %}
+                           {% else %} 
+                           {% for athlete in athletes %}
+                           <tr id="athlete_detail">
+                                <td style="width:50px">
+                                <input type="text" id="group" disabled="true" value="{{group}}" style="width:20px">
+                                </td>
+                                
+                                <td style="width:50px"><input type="text" id="class_num" disabled="true" maxlength="1" style="width:30px" value="{{athlete.classObject.num}}"></td>
+                                <td style="width:120px"><input type="text" id="athlete_id" maxlength="12" style="width:100px" disabled="true" value="{{athlete.athleteObject.athlete_id}}"></td>
+                                <td style="width:80px"><input type="text" id="name" disabled="true" style="width:60px" value="{{athlete.athleteObject.name}}"></td>
+                                <td>
+                                <div class="race_result">
+                                <input type="radio" name="{{athlete.athleteObject.athlete_id}}" id="runned" class="runned">
+                                <label for="runned" class="race_result">成绩</label>
+                                <input type="hidden" id="result" value="">
+                                <!-- 3 -->
+                                <input type="text" id="result_1" style="width:50px" value="{{athlete.result}}">
+                                <label>米</label>
+                                <!-- 5 -->
+                                <input type="hidden" id="result_2" style="width:30px">
+                                <input type="hidden" id="result_3" style="width:30px">
+                                </div>
+                                <div class="race_result">
+                                <input type="radio" name="{{athlete.athleteObject.athlete_id}}" id="absent" class="absent">
+                                <label for="absent">缺席</label>
+                                </div>
+                                <div class="race_result">
+                                <input type="radio" name="{{athlete.athleteObject.athlete_id}}" id="timeoff" class="timeoff">
+                                <label for="timeoff">请假</label>
+                                </div>
+                                </td>
+                                <td class="center">
+
+                                    <a class="btn btn-success"  id="login_score">
+                                        <i class="icon-zoom-in icon-white"></i>  
+                                        录入                                 
+                                    </a>
+                                    <!-- <input type="submit" value="录入"/> -->
+                                    <!-- <input type="button" id="new_score" value="add"> -->
+                                    <a class="btn btn-info" id="reset">
+                                        <i class="icon-edit icon-white"></i>  
+                                        修改                                            
+                                    </a>
+
+                                   <!--  <a class="btn btn-danger" href="#">
+                                        <i class="icon-trash icon-white"></i> 
+                                        Delete
+                                    </a> -->
+                                </td>
+                             </tr>
+                           {% endfor %}
+                           {% endif %}
+						  </tbody>
+						</table>	
+				    </div>
+			  </div>
+</div>
+</body>

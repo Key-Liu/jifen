@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<!--
+		Charisma v1.0.0
+
+		Copyright 2012 Muhammad Usman
+		Licensed under the Apache License v2.0
+		http://www.apache.org/licenses/LICENSE-2.0
+
+		http://usman.it
+		http://twitter.com/halalit_usman
+	-->
+	<!-- dashboard的意思是指示版 -->
+	<meta charset="utf-8">
+	<title>运动会计分系统</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Charisma, a fully featured, responsive, HTML5, Bootstrap admin template.">
+	<meta name="author" content="Muhammad Usman">
+
+	<!-- The styles -->
+	{% load staticfiles %}
+	<link href="{% static 'css/font.css' %}" rel="stylesheet">
+	<link href="{% static 'css/bootstrap-cerulean.css' %}" rel="stylesheet">
+	<style type="text/css">
+	  body {
+		padding-bottom: 40px;
+	  }
+	  .sidebar-nav {
+		padding: 9px 0;
+	  }
+	  .score_group input{
+	  	width: 20px;
+	  }
+	  .score_athlete_name input{
+	  	width: 50px;
+	  }
+	  .score_athlete_id input{
+	  	width: 100px;
+	  }
+	  .confirm
+	  {
+	  	display: none;
+	  }
+	</style>
+	{% load staticfiles %}
+	<link href="{% static 'css/bootstrap-responsive.css' %}" rel="stylesheet">
+	<link href="{% static 'css/charisma-app.css' %}" rel="stylesheet">
+	<link href="{% static 'css/jquery-ui-1.8.21.custom.css' %}" rel="stylesheet">
+	<link href="{% static 'css/fullcalendar.css' %}" rel='stylesheet'>
+	<link href="{% static 'css/fullcalendar.print.css' %}" rel='stylesheet'  media='print'>
+	<link href="{% static 'css/chosen.css' %}" rel='stylesheet'>
+	<link href="{% static 'css/uniform.default.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/colorbox.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/jquery.cleditor.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/jquery.noty.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/noty_theme_default.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/elfinder.min.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/elfinder.theme.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/jquery.iphone.toggle.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/opa-icons.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/uploadify.css'%}" rel='stylesheet'>
+
+	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+
+	<!-- 提供html5元素的IE6-8支持 -->
+
+	<!--[if lt IE 9]>
+	  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- The fav icon -->
+	<!-- <link rel="shortcut icon" href="img/favicon.ico"> -->
+	
+	<script src="{% static 'js/jquery-1.7.2.min.js'%}"></script>
+	<script>
+		$(document).ready(function(){
+			var sport_id={{sport_id}};
+			$("#select_group option").each(function(){
+        		var text = $(this).text();
+        	if ($("#select_group option:contains('" + text + "')").length > 1)
+            	$("#select_group option:contains('" + text + "'):gt(0)").remove();
+    		})
+    		//删除重复的option选项
+			$("#selectlabel select").change(function(){
+				var groupnum = $("#selectlabel select").attr("value");
+			})
+			var flag = 0;//标记点击次数
+			//点击编辑的反应
+			$(".edit").click(function(){
+				//编辑框可操作
+				$(this).parent().parent().children().eq(0).children().removeAttr("disabled");
+				$(this).parent().children().eq(1).show();
+				$(this).hide();
+				//隐藏此按钮
+			})
+			//按修改按钮的反应
+			$(".confirm").click(function(){
+				var group = $(this).parent().parent().children().eq(0).children().attr("value");
+				var nid = $(this).parent().parent().children().eq(2).children().attr("value");
+				if(!group)
+				{
+					alert("组号信息未填写，请补充完毕再点击");
+					return false;
+				}
+				$.ajax({
+					type: 'POST',
+					url: "{% url 'athlete:change_athlete' %}",
+					data: {
+						group : group,
+						nid : nid,
+						sport_id : sport_id,
+					},
+					cache:false,
+					success: function(data){
+						alert(data);
+					},
+					error:function (XMLHttpRequest, textStatus, errorThrown) {
+					  // 通常情况下textStatus和errorThown只有其中一个有值 
+					  alert(errorThrown); // the options for this ajax request
+					},
+				});
+				$(this).parent().parent().children().eq(0).children().attr("disabled","disabled");
+				$(this).parent().children().eq(0).show();
+				$(this).hide();
+			})
+			//按删除按钮的反应
+			$(".delete").click(function(){
+				var nid = $(this).parent().parent().children().eq(2).children().attr("value");
+				$.ajax({
+					type: 'POST',
+					url: "{% url 'athlete:delete_athlete' %}",
+					data: {
+						nid : nid,
+						sport_id : sport_id,
+					},
+					cache:false,
+					success: function(data){
+						alert(data);
+					},
+					error:function (XMLHttpRequest, textStatus, errorThrown) {
+					  // 通常情况下textStatus和errorThown只有其中一个有值 
+					  alert(errorThrown); // the options for this ajax request
+					},
+				});
+				$(this).parent().parent().remove();
+			})
+
+			$("#selectlabel select").change(function(){
+				var value = $(this).attr("value");
+				var values = "."+value;
+				if(value!=0)
+				{
+					$("#table_tbody tr").each(function(){
+						$(this).hide();
+					})
+					$(values).parent().show();
+				}
+				else
+				{
+					$("#table_tbody tr").each(function(){
+						$(this).show();
+					})
+				}
+			})
+		})
+	</script>
+
+
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="box span11">
+					<div class="box-header well" data-original-title>
+						<h2><i class="icon-user"></i> {{sport.sport_name}}运动员</h2>
+					</div>
+					<div class="box-content">
+				    <div class="row-fluid">
+				    	<div class="span6">
+				    		<div id="DataTables_Table_0_length" class="dataTables_length">
+				    		<div id="selectedbox">
+				    		<table border="0">
+				    		<th>
+				    			<label id="selectlabel">
+				    				<select size="1" name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" id="select_group">
+				    					<option value="0" selected="selected">无</option>
+				    					{% if scorelist %}
+											{% for score in scorelist %}
+												<option value="{{score.group}}">{{score.group}}</option>
+											{% endfor %}
+							  			{% endif %}
+				    				</select>
+				    				组号选择
+				    			</label>
+				    		</th>
+				    			</table>
+				    			</div>
+				    		</div>
+				    	</div>
+				    </div>
+
+					<table class="table table-striped table-bordered bootstrap-datatable datatable">
+						  <thead>
+							  <tr>
+								  <th>组号</th>
+								  <th>姓名</th>
+								  <th>学号</th>
+								  <th>班级</th>
+								  <th>操作</th>
+							  </tr>
+						  </thead>
+						  <tbody id="table_tbody">
+							{% if scorelist %}
+								{% for score in scorelist %}
+							<tr>
+								<td class="score_group {{score.group}}">
+									<input type="text" value="{{score.group}}" disabled="disabled" />
+								</td>
+								<td class="score_athlete_name">
+									<input type="text" value="{{score.athleteObject.name}}" disabled="disabled" />
+								</td>
+								<td class="score_athlete_id">
+									<input type="text" value="{{score.athleteObject.athlete_id}}" disabled="disabled" />
+								</td>
+								<td class="score_class">
+									<select name="class" disabled="disabled" id="score__class">
+										<option value="{{score.classObject}}" selected="selected">{{score.classObject}}</option>
+									</select>
+								</td>
+								<td class="center">
+									<a class="btn btn-info edit" href="#">
+										<i class="icon-edit icon-white"></i>  
+										编辑                                        
+									</a>
+									<a class="btn btn-info confirm" href="#">
+										<i class="icon-edit icon-white"></i>  
+										修改                                        
+									</a>
+									<a class="btn btn-danger delete" href="#">
+										<i class="icon-trash icon-white"></i> 
+										删除
+									</a>
+								</td>
+							</tr>
+								{% endfor %}
+							{% endif %}
+						</tbody>  
+					</table>
+					</div> 
+				</div>
+		</div>
+	</div>
+
+</body>

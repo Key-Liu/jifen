@@ -1,0 +1,4 @@
+"{{sport}}"
+"组号", 姓名, 学号, 班级, 成绩, 排名, 加分, 额外加分, 决赛
+{% for score in scorelist %}{{ score.group|addslashes }}, {{ score.athleteObject.name|addslashes }}, '{{score.athleteObject.athlete_id|addslashes }}, {{ score.classObject|addslashes }}, {{ score.result|addslashes }}, {{ score.rank|addslashes }}, {{ score.mark|addslashes }}, {{ score.ext_mark|addslashes }}, {{ score.final|addslashes }}
+{% endfor %}

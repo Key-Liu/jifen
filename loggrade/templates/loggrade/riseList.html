@@ -1,0 +1,7 @@
+{% if riseList %}
+	{% for riseScore in riseList %}
+		<p>{{ riseScore.sportOject.sport_name }}</p>
+	{% endfor %}
+{% else %}
+	<p>not available</p>
+{% endif %}

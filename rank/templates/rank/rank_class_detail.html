@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<!--
+		Charisma v1.0.0
+
+		Copyright 2012 Muhammad Usman
+		Licensed under the Apache License v2.0
+		http://www.apache.org/licenses/LICENSE-2.0
+
+		http://usman.it
+		http://twitter.com/halalit_usman
+	-->
+	<!-- dashboard的意思是指示版 -->
+	<meta charset="utf-8">
+	<title>运动会计分系统</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Charisma, a fully featured, responsive, HTML5, Bootstrap admin template.">
+	<meta name="author" content="Muhammad Usman">
+
+	<!-- The styles -->
+	{% load staticfiles %}
+	<link href="{% static 'css/font.css' %}" rel="stylesheet">
+	<link href="{% static 'css/bootstrap-cerulean.css' %}" rel="stylesheet">
+	<style type="text/css">
+	  body {
+		padding-bottom: 40px;
+	  }
+	  .sidebar-nav {
+		padding: 9px 0;
+	  }
+	</style>
+	{% load staticfiles %}
+	<link href="{% static 'css/bootstrap-responsive.css' %}" rel="stylesheet">
+	<link href="{% static 'css/charisma-app.css' %}" rel="stylesheet">
+	<link href="{% static 'css/jquery-ui-1.8.21.custom.css' %}" rel="stylesheet">
+	<link href="{% static 'css/fullcalendar.css' %}" rel='stylesheet'>
+	<link href="{% static 'css/fullcalendar.print.css' %}" rel='stylesheet'  media='print'>
+	<link href="{% static 'css/chosen.css' %}" rel='stylesheet'>
+	<link href="{% static 'css/uniform.default.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/colorbox.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/jquery.cleditor.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/jquery.noty.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/noty_theme_default.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/elfinder.min.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/elfinder.theme.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/jquery.iphone.toggle.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/opa-icons.css'%}" rel='stylesheet'>
+	<link href="{% static 'css/uploadify.css'%}" rel='stylesheet'>
+
+	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+
+	<!-- 提供html5元素的IE6-8支持 -->
+
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- The fav icon -->
+	<!-- <link rel="shortcut icon" href="img/favicon.ico">
+	-->
+
+</head>
+<body>
+	<table class="table table-striped table-bordered bootstrap-datatable datatable">
+		<thead>
+			<tr>
+				<th>班级</th>
+				<th>总分</th>
+				<th>排名</th>
+			</tr>
+			{% if latest_class_list %}
+				{% for class in latest_class_list %}
+					{% if class.rank %}
+				<tr>
+					<td>
+						{{class}}		
+					</td>
+					<td>
+						{{class.mark}}		
+					</td>
+					<td>
+						{{class.rank}}
+					</td>
+				</tr>
+					{% endif %}
+			   {% endfor %}
+		    {% endif %}
+		</thead>
+	</table>
+</body>
+</html>

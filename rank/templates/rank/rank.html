@@ -1,0 +1,37 @@
+{% include "demo/header.html" %}
+
+	{% load staticfiles %}
+	<script src="{% static 'js/jquery-1.7.2.min.js'%}"></script>
+	<script>
+		$(document).ready(function(){
+			$("#iframe").load(function(){
+				var mainheight = $(this).contents().find("body").height()+500;
+				$(this).height(mainheight);
+			});
+			$("#sportrank").click(function(){
+				$("iframe").attr("src","{% url 'rank:rank_sport' %}");
+			})
+			$("#classrank").click(function(){
+				$("iframe").attr("src","{% url 'rank:rank_class' %}")
+			})
+		})
+	</script>
+
+<!-- content starts -->
+<div id="content" class="span10">
+<div>
+	<ul class="breadcrumb">
+		<li>
+			<button id="sportrank">查看项目排名</button>
+		</li>
+		<li>
+			<button id="classrank">查看班级排名</button>
+		</li>
+	</ul>
+</div>
+
+<iframe src="{% url 'rank:rank_sport' %}" frameborder="0" width="100%" height="100%" id="iframe"></iframe>
+</div>
+
+</body>
+</html>
